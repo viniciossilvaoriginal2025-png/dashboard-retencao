@@ -793,9 +793,9 @@ def display_admin_dashboard(df_monthly_aggregate): # df (passado do main) é o M
     
     # 4. Decide qual DataFrame usar com base nos filtros
     if is_date_available:
-        df_filtered = df_filtered_daily.copy()
+        df_filtered = df_filtered_daily.copy() # Usa dados diários filtrados
     else:
-        df_filtered = df_monthly_aggregate.copy()
+        df_filtered = df_monthly_aggregate.copy() # Usa dados mensais
 
     # Aplica o filtro de Agente (se não for "Todos")
     if selected_agent != "Todos os Agentes":
@@ -872,6 +872,7 @@ def display_admin_dashboard(df_monthly_aggregate): # df (passado do main) é o M
                         top_fcr = top_fcr[['Agente', 'FCR']] 
                         top_fcr['FCR'] = (top_fcr['FCR'] * 100).map('{:.2f}%'.format) 
                         st.dataframe(top_fcr, use_container_width=True, hide_index=True)
+                    else: st.info("Métrica 'FCR' não disponível.")
                     # Satisfacao
                     if 'Satisfacao' in df_compare_atual.columns and 'QTD Atendimento' in df_compare_atual.columns:
                         df_satisfacao_filtered = df_compare_atual[(df_compare_atual['Satisfacao'] > 0.0) & (df_compare_atual['Satisfacao'] < 5.0)]
@@ -879,6 +880,7 @@ def display_admin_dashboard(df_monthly_aggregate): # df (passado do main) é o M
                         top_satisfacao = top_satisfacao[['Agente', 'Satisfacao']]
                         top_satisfacao['Satisfacao'] = (top_satisfacao['Satisfacao'] / 5.0 * 100).map('{:.2f}%'.format)
                         st.dataframe(top_satisfacao, use_container_width=True, hide_index=True)
+                    else: st.info("Métrica 'Satisfacao' não disponível.")
                     # TMIA
                     if 'TMIA' in df_compare_atual.columns and 'QTD Atendimento' in df_compare_atual.columns:
                         df_tmia_filtered = df_compare_atual[(df_compare_atual['TMIA'] > 0.0)]
@@ -886,6 +888,7 @@ def display_admin_dashboard(df_monthly_aggregate): # df (passado do main) é o M
                         top_tmia = top_tmia[['Agente', 'TMIA']]
                         top_tmia['TMIA'] = top_tmia['TMIA'].apply(format_time)
                         st.dataframe(top_tmia, use_container_width=True, hide_index=True)
+                    else: st.info("Métrica 'TMIA' não disponível.")
 
             # --- RANKING 2: SEMANAL ANTERIOR ---
             with col_rank2:
@@ -926,7 +929,6 @@ def display_admin_dashboard(df_monthly_aggregate): # df (passado do main) é o M
             # --- RANKING 3: MÊS ATUAL (CONSOLIDADO) ---
             with col_rank3:
                 st.markdown(f"##### 🥉 Consolidado do Mês ({selected_month})")
-                st.info(f"Base: '{MESES.get(selected_month.lower())}'")
                 
                 # Usa o df_monthly_aggregate (o CSV do mês inteiro)
                 if df_monthly_aggregate.empty:
@@ -1137,6 +1139,11 @@ def main():
     if st.session_state['authenticated']:
         change_password_form()
         logout_button()
+        
+        # 🚨 --- ADIÇÃO DA ASSINATURA --- 🚨
+        st.sidebar.markdown("---")
+        st.sidebar.caption("Desenvolvido por Vinicios Oliveira")
+        # 🚨 --- FIM DA ADIÇÃO --- 🚨
 
         if st.session_state.get('primeiro_acesso'):
             st.title("Bem-vindo(a)! 🔑")
@@ -1188,6 +1195,11 @@ def main():
         st.markdown("---")
         st.write("Atenção: O administrador inicial tem login: `admin` e senha: `12345`.")
         login_form()
+        
+        # 🚨 --- ADIÇÃO DA ASSINATURA --- 🚨
+        st.sidebar.markdown("---")
+        st.sidebar.caption("Desenvolvido por Vinicios Oliveira")
+        # 🚨 --- FIM DA ADIÇÃO --- 🚨
 
 if __name__ == '__main__':
     main()
